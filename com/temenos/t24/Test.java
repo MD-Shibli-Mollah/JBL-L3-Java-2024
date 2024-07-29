@@ -37,7 +37,6 @@ public class Test {
         Double dblTxnAmt = 0.0;
         dblTxnAmt = Double.valueOf(yDbtAmt);
         System.out.println(dblTxnAmt);
-        System.out.println(dblTxnAmt);
         
         /*if (myNameLen > 35){
             String myName35 = myName.substring(0, 35); //Total 35 characters excluding 35th number.
