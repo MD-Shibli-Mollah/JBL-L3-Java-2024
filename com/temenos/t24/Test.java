@@ -61,14 +61,15 @@ public class Test {
         /*String encryptedBase64Credentials = basicAuth;
         String decryptedBase64 = decrypt(encryptedBase64Credentials, encryptionKey);
         apiAuthRec.setJwtToken(decryptedBase64);
-
+        
+        /*
         try (FileWriter fw = new FileWriter("/Temenos/T24/UD/Tracer/DECRYPT-" + currentRecordId + ".txt", true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw)) {
             out.println("MyAPI- encryptedBase64Credentials: " + encryptedBase64Credentials + "\n" + "decryptedBase64: "
                     + decryptedBase64);
         } catch (IOException e) {
-        }*/
+        }
         
      // AES decryption method
         /*public static String decrypt(String strToDecrypt, String secret) {
