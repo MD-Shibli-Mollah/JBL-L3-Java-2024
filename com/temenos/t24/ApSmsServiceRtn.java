@@ -7,7 +7,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
 import java.util.List;
+import java.util.Properties;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,99 +54,61 @@ public class ApSmsServiceRtn extends ServiceLifecycle {
             email = smsRec.getEmail().getValue();
         } catch (Exception e1) {
         }
-        System.out.println(phone + "\n" + smsContent);
+        System.out.println("Email is: " + email + "\n" + smsContent);
 
-        String POST_URL_TP = "";
-        String POST_PARAMS_TP = "";
+        String host = "smtp.office365.com";
+        final String user = "notification@nazihargroup.com";
+        final String password = "TEST.PASSWORD";
 
-        POST_URL_TP = smsRec.getApiLink().getValue();
-        POST_PARAMS_TP = "{\n" + "  \"body\":                               {\n" + "            \"messageContent\": "
-                + '"' + smsContent + '"' + ",\n" + "            \"smsNumber\": " + '"' + phone + '"' + " \n"
-                + "            \"phoneNumber\": " + '"' + email + '"' + " \n"
-                + "                                                        }\n" + "}";
-
-        System.out.println("Calling SMS Api");
-        StringBuilder smsResponse = this.makeRestCall(POST_URL_TP, POST_PARAMS_TP);
-
-        JSONObject jsonSms = null;
-
+        String to = email;
+        String body = smsContent;
+        String subject = "JBPLC: Stay Ahead with Our Latest Financial Insights";
         try {
-            jsonSms = new JSONObject(smsResponse.toString());
-        } catch (JSONException e) {
-        }
-
-        try {
-            if (jsonSms.getJSONObject("header").get("status").toString().equals("success")) {
-                smsRec.setSmsStatus("SENT");
-                try {
-                    smsBook.write(id, smsRec);
-                } catch (T24IOException e) {
-                }
+            // Send email
+            sendEmail(host, user, password, to, subject, body);
+            smsRec.setSmsStatus("SENT");
+            System.out.println("Email is sent successfully...");
+            try {
+                smsBook.write(id, smsRec);
+            } catch (T24IOException e) {
             }
-        } catch (JSONException e) {
+        } catch (MessagingException e) {
+            System.out.println("Email can not be sent for " + e);
+            // e.printStackTrace();
         }
     }
-
     // END OF MAIN METHOD
 
-    public StringBuilder makeRestCall(String POST_URL, String POST_PARAMS) {
-        StringBuilder response = new StringBuilder();
-        HttpURLConnection con = null;
-        try {
-            URL url = new URL(POST_URL);
-            con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Authorization", "Basic SU5QVVRUOjEyMzQ1Ng==");
-            con.setDoOutput(true);
-            try {
-                OutputStream os = con.getOutputStream();
-                byte[] input = POST_PARAMS.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-                System.out.println(con);
-                System.out.println("Waiting for REST call response");
-                try {
-                    Thread.sleep(3000);
-                    if (!(con.getResponseCode() == HttpURLConnection.HTTP_OK)) {
-                        Thread.sleep(2000);
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Rest Call Falied");
-                }
-            } catch (IOException e) {
-                System.out.println("Connection establish failed");
-                System.exit(0);
+    // Method to send email
+    private void sendEmail(String host, String user, String password, String to, String subject, String body)
+            throws MessagingException {
+        // Set up properties for the email session
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true"); // Enable STARTTLS
+        properties.put("mail.smtp.host", host); // SMTP host
+        properties.put("mail.smtp.port", "587");
+
+        properties.put("mail.smtp.ssl.trust", host);
+        properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        // properties.put("mail.debug", "true"); // DEBUG is disabled
+
+        // Create a session with an authenticator
+        Session session = Session.getInstance(properties, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(user, password);
             }
+        });
 
-            try {
-                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                        String responseLine;
-                        while ((responseLine = br.readLine()) != null) {
-                            response.append(responseLine.trim());
-                        }
+        // Create a new email message
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(user));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+        message.setSubject(subject);
+        message.setText(body);
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream()))) {
-                        String responseLine;
-                        while ((responseLine = br.readLine()) != null) {
-                            response.append(responseLine.trim());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println("Rest call encountered an error");
-            }
-            con.disconnect();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return response;
+        // Send the email
+        Transport.send(message);
+        System.out.println("Email is sent successfully to " + to);
     }
 }
