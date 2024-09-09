@@ -28,45 +28,46 @@ public class ApOnDemandSmsService extends ServiceLifecycle {
     @Override
     public List<String> getIds(ServiceData serviceData, List<String> controlList) {
         DataAccess da = new DataAccess(this);
-        List<String> tmpIds = da.selectRecords("", "EB.JBL.SMS.ON.DEMAND", "", "WITH PROCESS.STATUS EQ ''");
+        // List<String> tmpIds = da.selectRecords("", "EB.JBL.SMS.ON.DEMAND",
+        // "", "WITH PROCESS.STATUS EQ ''");
         List<String> cusIds = null;
 
-        if (tmpIds.size() != 0) {
-            demandRecord = new EbJblSmsOnDemandRecord(da.getRecord("EB.JBL.SMS.ON.DEMAND", "SYSTEM"));
+        // if (tmpIds.size() != 0) {
+        demandRecord = new EbJblSmsOnDemandRecord(da.getRecord("EB.JBL.SMS.ON.DEMAND", "SYSTEM"));
 
-            String cmd = "";
-            String line = "";
+        String cmd = "";
+        String line = "";
 
+        try {
+            cmd = demandRecord.getCmdBasedOnCus().getValue();
+            smsBody = demandRecord.getSmsBody().getValue();
+        } catch (Exception e) {
+        }
+
+        if (cmd == "") {
+            System.out.println("Calling custom selection routine : ApOnDemandSmsCmd");
+            ApOnDemandSmsCmd smsCmd = new ApOnDemandSmsCmd();
+            cusIds = smsCmd.getIds(serviceData, controlList);
+        } else {
+            System.out.println("Getting selection command from template");
+            cusIds = da.selectRecords("BNK", "CUSTOMER", "", cmd);
+        }
+
+        if (smsBody == "") {
+            File file = new File("/Temenos/T24/UD/Tracer/Tracer.txt");
+            BufferedReader br = null;
             try {
-                cmd = demandRecord.getCmdBasedOnCus().getValue();
-                smsBody = demandRecord.getSmsBody().getValue();
-            } catch (Exception e) {
+                br = new BufferedReader(new FileReader(file));
+            } catch (FileNotFoundException e1) {
             }
-
-            if (cmd == "") {
-                System.out.println("Calling custom selection routine : OnDemandSmsCmd");
-                ApOnDemandSmsCmd smsCmd = new ApOnDemandSmsCmd();
-                cusIds = smsCmd.getIds(serviceData, controlList);
-            } else {
-                System.out.println("Getting selection command from template");
-                cusIds = da.selectRecords("", "CUSTOMER", "", cmd);
-            }
-
-            if (smsBody == "") {
-                File file = new File("/Temenos/T24/UD/Tracer/Tracer.txt");
-                BufferedReader br = null;
-                try {
-                    br = new BufferedReader(new FileReader(file));
-                } catch (FileNotFoundException e1) {
+            try {
+                while ((line = br.readLine()) != null) {
+                    smsBody += line;
                 }
-                try {
-                    while ((line = br.readLine()) != null) {
-                        smsBody += line;
-                    }
-                } catch (IOException e1) {
-                }
+            } catch (IOException e1) {
             }
         }
+        // }
         return cusIds;
     }
 

@@ -12,6 +12,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.temenos.t24.api.records.customer.LegalIdClass;
+import com.temenos.tafj.jee.client.AppServerProvider;
+import com.temenos.tafj.jee.client.TAFJJEEClient;
+import com.temenos.tafj.jee.client.TAFJJEEClientFactory;
+import com.temenos.tafj.sb.TRunCallObject;
 
 /**
  * TODO: Document me!
@@ -37,6 +41,40 @@ public class Test {
         Double dblTxnAmt = 0.0;
         dblTxnAmt = Double.valueOf(yDbtAmt);
         System.out.println(dblTxnAmt);
+        
+        
+     // TEST OFS for Customer Record ID is: 101153
+        /*
+         * if (id.equals("101153")) { cusRec.getAmlCheck().setValue("SENT");
+         * cusRec.getAmlResult().setValue("RESULT.AWAITED");
+         * 
+         * SynchronousTransactionData txnData = new
+         * SynchronousTransactionData(); txnData.setFunction("INPUTT");
+         * txnData.setNumberOfAuthoriser("1");
+         * txnData.setSourceId("BULK.OFS"); txnData.setTransactionId(id);
+         * txnData.setVersionId("CUSTOMER,AML");
+         * 
+         * transactionData.add(txnData); records.add(cusRec.toStructure());
+         * }
+         */
+        // TEST END
+        
+        
+      //Get an EJB client from a JBoss7eap deployment on server 10.21.2.99
+        TAFJJEEClient client = TAFJJEEClientFactory.getEjbClient(AppServerProvider.JBOSS7EAP, "10.21.2.99", "8080");
+                
+        //Process an OFS request, method argument is the OFS request
+        String response = client.processOFS("ENQUIRY.SELECT,,INPUTT/123456,%CURRENCY");
+                
+        //Invoke a subroutine, method arguments are the Subroutine name and an array of subroutine parameters 
+        String[] response1 = client.callAt("EXCHRATE", new String[] { "1", "CHF", "500", "GBP", "", "", "", "", "", "" });   
+
+        //Execute a program in background. A TRunCallObject instance is used to setup the invocation parameters (command and optional user input datas).
+        //It returns a TRunCallObject which contains the response status (0 success / 1 failure) and eventual program output. 
+        //Execute program and get response back
+        TRunCallObject response2 = client.trun(new TRunCallObject("PROGRAM.NAME ARG1 ARG2"));
+        
+        
         
         /*if (myNameLen > 35){
             String myName35 = myName.substring(0, 35); //Total 35 characters excluding 35th number.
@@ -101,6 +139,7 @@ public class Test {
                 break;
             }
         }*/
+        
 // SELECT any application      
 // List<String> com.temenos.t24.api.system.DataAccess.selectRecords(String companyMnemonic, String tableName, String fileSuffix, String filterAndSort)
         String input = "20210430/0";

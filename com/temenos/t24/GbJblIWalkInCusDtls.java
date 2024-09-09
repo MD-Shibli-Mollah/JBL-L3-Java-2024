@@ -2,7 +2,7 @@ package com.temenos.t24;
 
 /*
  * MODULE         : LOCAL REMITTANCE (TT)
- * VERSION        : TELLER,JBL.TT.ISSUE.INIT
+ * VERSION        : TELLER
  * EB.API         : GbJblIWalkInCusDtls
  * ATTACHED AS    : INPUT ROUTINE
  * RELATED APP    : N/A
@@ -22,6 +22,11 @@ public class GbJblIWalkInCusDtls extends RecordLifecycle {
    public TValidationResponse validateRecord(String application, String currentRecordId, TStructure currentRecord, TStructure unauthorisedRecord, TStructure liveRecord, TransactionContext transactionContext) {
       TellerRecord teller = new TellerRecord(currentRecord);
       String txnType = teller.getLocalRefField("LT.BEARER.TYP").getValue();
+      
+      if (txnType.equals("SELF")) {
+          return teller.getValidationResponse();
+       }
+      
       if (txnType.equals("JBL-CUS") && teller.getLocalRefField("LT.ACCT.NO").getValue().equals("")) {
          teller.getLocalRefField("LT.ACCT.NO").setError("For JBL-CUS Acct No is missing");
       }
@@ -43,10 +48,14 @@ public class GbJblIWalkInCusDtls extends RecordLifecycle {
             teller.getLocalRefField("LT.TEL.NO.BEN").setError("For WALK-IN-CUS MOB No is missing");
          }
 
+         if (teller.getLocalRefField("LT.RLTN.BENF").getValue().equals("")) {
+             teller.getLocalRefField("LT.RLTN.BENF").setError("For WALK-IN-CUS Relation with Beneficiary is missing");
+          }
+
          if (teller.getLocalRefField("LT.TXN.PURPOSE").getValue().equals("")) {
             teller.getLocalRefField("LT.TXN.PURPOSE").setError("For WALK-IN-CUS Txn Purpose is missing");
          }
-
+         
          if (teller.getLocalRefField("LT.SRC.OF.FUND").getValue().equals("")) {
             teller.getLocalRefField("LT.SRC.OF.FUND").setError("For WALK-IN-CUS Source of Fund is missing");
          }

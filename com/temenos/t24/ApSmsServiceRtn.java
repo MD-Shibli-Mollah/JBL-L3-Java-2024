@@ -58,7 +58,7 @@ public class ApSmsServiceRtn extends ServiceLifecycle {
 
         String host = "smtp.office365.com";
         final String user = "notification@nazihargroup.com";
-        final String password = "TEST.PASSWORD";
+        final String password = "nitsl#2024NG";
 
         String to = email;
         String body = smsContent;
