@@ -21,7 +21,7 @@ package com.temenos.t24;
  * SMTP server name: smtp.office365.com
    SMTP port: 587
    user: notification@nazihargroup.com
-   password: nitsl#2024NG
+   password: TEST2024NG
    if Port 587 does not work (recommended) or port 25
  *       
  *       
