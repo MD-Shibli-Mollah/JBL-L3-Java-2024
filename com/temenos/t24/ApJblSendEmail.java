@@ -43,7 +43,7 @@ public class ApJblSendEmail {
         // TODO Auto-generated method stub
         String host = "smtp.office365.com";
         final String user = "notification@nazihargroup.com";
-        final String password = "nitsl#2024NG";
+        final String password = "HIDDEN";
 
         String to = "md.ta.shibli@gmail.com";
 
