@@ -29,8 +29,10 @@ import com.temenos.t24.api.complex.aa.activityhook.ArrangementContext;
 import com.temenos.t24.api.complex.aa.activityhook.TransactionData;
 import com.temenos.t24.api.hook.arrangement.ActivityLifecycle;
 import com.temenos.t24.api.records.aaaccountdetails.AaAccountDetailsRecord;
+import com.temenos.t24.api.records.aaarraccount.AaArrAccountRecord;
 import com.temenos.t24.api.records.aaarrangement.AaArrangementRecord;
 import com.temenos.t24.api.records.aaarrangementactivity.AaArrangementActivityRecord;
+import com.temenos.t24.api.records.aaprddescustomer.AaPrdDesCustomerRecord;
 import com.temenos.t24.api.records.aaproductcatalog.AaProductCatalogRecord;
 import com.temenos.t24.api.records.company.CompanyRecord;
 import com.temenos.t24.api.records.customer.CustomerRecord;
@@ -54,7 +56,7 @@ public class ApJblAaAccountSmsAuthRtn extends ActivityLifecycle {
             String cusId = "";
             cusId = arrangementRecord.getCustomer(0).getCustomer().toString();
             CustomerRecord cusRec = new CustomerRecord(da.getRecord("CUSTOMER", cusId));
-            
+                   
             String cusPhoneNo   = "";
             String cusEmail     = "";
             try {
