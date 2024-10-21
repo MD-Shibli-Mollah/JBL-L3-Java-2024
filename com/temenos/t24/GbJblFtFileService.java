@@ -30,7 +30,8 @@ public class GbJblFtFileService extends ServiceLifecycle {
     @Override
     public List<String> getIds(ServiceData serviceData, List<String> controlList) {
         // Path to the CSV file
-        String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.BULK.csv";
+        // String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.BULK.csv";
+        String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.csv";
 
         // Read and return FT_IDs
         List<String> idsList = readFileForIds(filePath);
@@ -48,7 +49,8 @@ public class GbJblFtFileService extends ServiceLifecycle {
         // System.out.println(id + " is Processing from the file...");
 
         // Path to the CSV file (again, if needed for fetching details)
-        String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.BULK.csv";
+       // String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.BULK.csv";
+        String filePath = "/Temenos/T24/UD/SHIBLI.BP/FUNDS.TRANSFER.RECORDS.csv";
 
         // Read entire CSV file data
         List<String[]> dataFromFile = readFile(filePath);
@@ -76,7 +78,8 @@ public class GbJblFtFileService extends ServiceLifecycle {
                 TransactionData txnData = new TransactionData();
                 txnData.setFunction("INPUT");
                 txnData.setNumberOfAuthoriser("0");
-                txnData.setSourceId("BULK.OFS");
+                // txnData.setSourceId("BULK.OFS");
+                txnData.setSourceId("CARD.OFS");
                 txnData.setVersionId("FUNDS.TRANSFER,JBL.SERVICE");
 
                 transactionData.add(txnData);
@@ -89,15 +92,11 @@ public class GbJblFtFileService extends ServiceLifecycle {
         }
      // Capture end time
         long endTime = System.currentTimeMillis();
-        System.out.println("End time for " + id + ": " + endTime);
+        // System.out.println("End time for " + id + ": " + endTime);
 
         // Calculate the duration in seconds
         double durationInSeconds = (endTime - startTime) / 1000.0;
         System.out.println("Duration for " + id + ": " + durationInSeconds + " seconds");
-
-        // Add the duration to the total duration
-        totalDuration += durationInSeconds;
-        System.out.println("Total processing time so far: " + totalDuration + " seconds");
     }
 
     // Method to read CSV file and extract FT_IDs (IDs to be processed)
