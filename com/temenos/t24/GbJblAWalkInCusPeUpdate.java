@@ -14,7 +14,7 @@ import com.temenos.t24.api.records.teller.TellerRecord;
 /*
  * MODULE         : LOCAL REMITTANCE (TT)
  * VERSION        : TELLER
- * EB.API         : GbJblAWalkInCusForPE
+ * EB.API         : GbJblAWalkInCusPeUpdate
  * ATTACHED AS    : AUTH ROUTINE
  * RELATED APP    : N/A
  * AUTHOR         : MD SHIBLI MOLLAH

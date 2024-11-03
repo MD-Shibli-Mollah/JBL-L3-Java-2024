@@ -19,7 +19,7 @@ import com.temenos.t24.api.system.DataAccess;
 /**
  * TODO: Document me!
  *
- * @author nazihar
+ * @author MD Shibli Mollah
  *
  */
 public class GbJblVOverrideFt extends RecordLifecycle {
